@@ -42,13 +42,20 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path package
-          Copy-Item "build\Release\MyCoolBrowser.exe" "package\"
-
+      
+          Copy-Item `
+            "build\Release\MyCoolBrowser.exe" `
+            "package\MyCoolBrowser.exe"
+      
           & "$env:QT_ROOT_DIR\bin\windeployqt.exe" `
             --release `
-            --webengine `
             --compiler-runtime `
+            --verbose 2 `
             "package\MyCoolBrowser.exe"
+      
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
 
       - name: Create ZIP
         shell: pwsh
