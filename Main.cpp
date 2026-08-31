@@ -73,25 +73,39 @@ private:
 
     void createTab(bool incognito = false) {
         QWebEngineProfile *profile;
+    
         if (incognito) {
+            // Off-the-record profile
             profile = new QWebEngineProfile(this);
-            profile->setOffTheRecord(true);
         } else {
             profile = QWebEngineProfile::defaultProfile();
         }
-
+    
         QWebEngineView *view = new QWebEngineView(this);
         QWebEnginePage *page = new QWebEnginePage(profile, view);
+    
         view->setPage(page);
-        view->setUrl(QUrl("https://www.qt.io"));  // Set your custom homepage
-
-        int index = tabWidget->addTab(view, "New Tab");
+        view->setUrl(QUrl("https://www.qt.io"));
+    
+        int index = tabWidget->addTab(
+            view,
+            incognito ? "Incognito" : "New Tab"
+        );
+    
         tabWidget->setCurrentIndex(index);
-
-        connect(view, &QWebEngineView::urlChanged, this, [=](const QUrl &url) {
+    
+        connect(view, &QWebEngineView::urlChanged,
+                this, [=](const QUrl &url) {
             if (tabWidget->currentWidget() == view) {
                 urlBar->setText(url.toString());
-                tabWidget->setTabText(index, url.host().isEmpty() ? "New Tab" : url.host());
+    
+                QString title = url.host();
+    
+                if (title.isEmpty()) {
+                    title = incognito ? "Incognito" : "New Tab";
+                }
+    
+                tabWidget->setTabText(index, title);
             }
         });
     }
