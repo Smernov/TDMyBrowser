@@ -101,7 +101,7 @@ private:
     }
 };
 
-#include "main.moc"
+#include "Main.moc"
 
 int main(int argc, char *argv[])
 {
